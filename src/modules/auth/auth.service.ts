@@ -50,11 +50,20 @@ export class AuthService {
   }
 
   async verify(token:any){
-    const decodificado=verifyToken(token);
-    if(decodificado){
-      return {ok:true,message:'Token verificado correctamente'};
-    }else{
-      return {ok:false,message:'Token inválido'};
+    try {
+      const decodificado = verifyToken(token);
+      if (decodificado) {
+        const response: any = { ok: true, message: 'Token verificado correctamente' };
+        if (decodificado.newToken) {
+          response.data = decodificado.newToken;
+          response.newToken = decodificado.newToken;
+        }
+        return response;
+      } else {
+        return { ok: false, message: 'Token inválido' };
+      }
+    } catch (error) {
+      return { ok: false, message: 'Token inválido' };
     }
   }
 }
