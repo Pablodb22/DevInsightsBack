@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
 import { LoginRequest } from './dto/LoginRequest';
 import { RegisterRequest } from './dto/RegisterRequest';
-import { generateToken } from '../../utils/token';
+import { generateToken, verifyToken } from '../../utils/token';
 
 dotenv.config();
 
@@ -47,5 +47,14 @@ export class AuthService {
     return {ok:true, message:'Usuario logueado correctamente', data:token}
 
   
+  }
+
+  async verify(token:any){
+    const decodificado=verifyToken(token);
+    if(decodificado){
+      return {ok:true,message:'Token verificado correctamente'};
+    }else{
+      return {ok:false,message:'Token inválido'};
+    }
   }
 }

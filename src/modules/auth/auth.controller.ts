@@ -17,5 +17,10 @@ export class AuthController {
   login(@Body() body: LoginRequest) {
     return this.authService.login(body);
   }
+
+  @Get('/verify')
+  verify(@Body() token: string) {
+    return this.authService.verify(token);
+  }
  
 }
