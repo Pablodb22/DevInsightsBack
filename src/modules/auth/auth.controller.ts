@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginRequest } from './dto/LoginRequest';
 import { RegisterRequest } from './dto/RegisterRequest';
@@ -17,10 +17,11 @@ export class AuthController {
   login(@Body() body: LoginRequest) {
     return this.authService.login(body);
   }
-
+  
   @Get('/verify')
-  verify(@Body() token: string) {
-    return this.authService.verify(token);
-  }
+    verify(@Headers('authorization') authorization: string) {
+      const token = authorization?.replace('Bearer ', '');
+      return this.authService.verify(token);
+    }
  
 }
