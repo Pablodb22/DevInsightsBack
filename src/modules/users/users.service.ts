@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import * as dotenv from 'dotenv';
 import { decodeToken } from '../../utils/token';
+import * as bcrypt from 'bcrypt';
 
 dotenv.config();
 
@@ -25,6 +26,90 @@ export class UsersService {
         return userWithoutPassword;
       }
       return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async updateUser(data: any) {
+    try{
+      const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
+      if (!existing) {
+        return null;
+      }
+
+      const updatedUser = await this.prisma.user.update({
+        where: { email: data.email },
+        data: {
+          name: data.name,
+          lastName: data.lastName,
+          location: data.location
+        }
+      });
+      const { password, ...userWithoutPassword } = updatedUser;
+      return userWithoutPassword;
+    }catch(error){        
+        return null;
+    }
+  }
+
+  async updatePass(data: any) {
+    try{
+
+      if(data.newPassword !== data.confirmPassword){
+        return null;
+      }
+
+      const updatePass=await this.prisma.user.findUnique({
+        where: { email: data.email }
+      });
+
+      if (!updatePass) {
+        return null;
+      }
+
+      const isMatch = await bcrypt.compare(
+        data.currentPassword,
+        updatePass!.password
+      );
+
+      if (!isMatch) {
+        return null;
+      }
+
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(data.newPassword, salt);
+
+      const updatedUser = await this.prisma.user.update({
+        where: { email: data.email },
+        data: {
+          password: hash
+        }
+      });
+
+
+      const { password, ...userWithoutPassword } = updatedUser;
+      return userWithoutPassword;
+    }catch(error){
+        return null;
+    }    
+  }
+
+  async updateToken(data: any) {
+    try {
+      const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
+      if (!existing) {
+        return null;
+      }
+
+      const updatedUser = await this.prisma.user.update({
+        where: { email: data.email },
+        data: {
+          githubToken: data.githubToken
+        }
+      });
+      const { password, ...userWithoutPassword } = updatedUser;
+      return userWithoutPassword;
     } catch (error) {
       return null;
     }
