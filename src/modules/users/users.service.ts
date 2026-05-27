@@ -11,11 +11,15 @@ export class UsersService {
 
   prisma = new PrismaClient();
 
-  async getUser(token: string) {
-    const decoded = decodeToken(token);
-    if (!decoded || !decoded.email) {
-      return null;
-    }
+  async getUser(authorization: string) {
+  const token = authorization?.replace('Bearer ', '').trim();
+  const decoded = decodeToken(token);
+
+  if (!decoded || !decoded.email) {
+    console.warn('⚠️ Token no decodificado');
+    return null;
+  }
+
 
     try {
       const user = await this.prisma.user.findUnique({
