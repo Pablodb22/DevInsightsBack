@@ -96,8 +96,6 @@ Crea un fichero `.env` en la raíz del proyecto con las siguientes variables:
 # Base de datos
 DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/devinsights"
 
-# Autenticación
-JWT_SECRET="tu_secreto_jwt_aqui"
 ```
 
 > ⚠️ **Nunca subas el fichero `.env` a control de versiones.**
